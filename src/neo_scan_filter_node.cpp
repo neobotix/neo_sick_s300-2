@@ -82,6 +82,8 @@ public:
 	NodeClass(): Node("neo_scan_filter_node")
 	{
 		// loading config
+		this->declare_parameter("scan_intervals");
+
 		scan_intervals = loadScanRanges();
 
 		// implementation of topics to publish
@@ -159,9 +161,10 @@ public:
 		std::vector<double> intervals_list;
 
 		//grab the range-list from the parameter server if possible
-		this->declare_parameter("scan_intervals_param");
-		rclcpp::Parameter foo_param("scan_intervals_param", std::vector<double>({}));
-		this->get_parameter("scan_intervals_param",vd_interval);
+		// rclcpp::Parameter foo_param("scan_intervals", std::vector<double>({}));
+		this->get_parameter("scan_intervals",vd_interval);
+		intervals_list = vd_interval;
+
 
 		//make sure we have a list of lists
 			if (!(intervals_list.size() == 2))
@@ -177,40 +180,39 @@ public:
 				auto interval = intervals_list[i];
 
 				//make sure that the value we're looking at is either a double or an int
+
 				if (!(typeid(interval) == typeid(int) || typeid(interval) == typeid(double)))
 				{
 					RCLCPP_ERROR(this->get_logger(),"Values in the scan intervals specification must be numbers");
 					throw std::runtime_error("Values in the scan intervals specification must be numbers");
 				}
-				vd_interval.push_back(typeid(interval) == typeid(int) ? (int)(interval) : (double)(interval));
-
+				intervals_list.push_back(typeid(interval) == typeid(int) ? (int)(interval) : (double)(interval));
 
 				//basic checking validity
-				if (vd_interval.at(0) < -M_PI || vd_interval.at(1) < -M_PI)
+				if (intervals_list.at(0) < -M_PI || intervals_list.at(1) < -M_PI)
 				{
 					RCLCPP_WARN(this->get_logger(),"Found a scan interval < -PI, skip!");
 					continue;
 					//throw std::runtime_error("Found a scan interval < -PI!");
 				}
 				//basic checking validity
-				if (vd_interval.at(0) > M_PI || vd_interval.at(1) > M_PI)
+				if (intervals_list.at(0) > M_PI || intervals_list.at(1) > M_PI)
 				{
 					RCLCPP_WARN(this->get_logger(),"Found a scan interval > PI, skip!");
 					continue;
 					//throw std::runtime_error("Found a scan interval > PI!");
 				}
 
-				if (vd_interval.at(0) >= vd_interval.at(1))
+				if (intervals_list.at(0) >= intervals_list.at(1))
 				{
 					RCLCPP_WARN(this->get_logger(),"Found a scan interval with i1 > i2, switched order!");
-					vd_interval[1] = vd_interval[0];
-					vd_interval[0] = (typeid(interval) == typeid(int) ? (int)(interval) : (double)(interval));
+					intervals_list[1] = intervals_list[0];
+					intervals_list[0] = (typeid(interval) == typeid(int) ? (int)(interval) : (double)(interval));
 				}
 
-				vd_interval_set.push_back(vd_interval);
+				vd_interval_set.push_back(intervals_list);
 			}
 	
-
 		//now we want to sort the intervals and check for overlapping
 		sort(vd_interval_set.begin(), vd_interval_set.end(), compareIntervals);
 

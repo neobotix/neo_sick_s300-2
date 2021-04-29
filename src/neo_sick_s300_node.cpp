@@ -119,8 +119,10 @@ int main(int argc, char **argv)
 	std::string port;
 	int baud_rate = 0;
 
-	nh->get_parameter_or("port", port, std::string("/dev/ttyUSB0"));
-	nh->get_parameter_or("baud", baud_rate, 500000);
+	nh->declare_parameter("port");
+	nh->declare_parameter("baud");
+	nh->get_parameter("port", port);
+	nh->get_parameter("baud", baud_rate);
 
 	while(rclcpp::ok())
 	{
