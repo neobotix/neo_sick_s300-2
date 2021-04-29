@@ -64,8 +64,6 @@
 // ROS message includes
 #include <sensor_msgs/msg/laser_scan.hpp>
 
-// #include <XmlRpc.h>
-
 using std::placeholders::_1;
 
 //####################
@@ -88,7 +86,7 @@ public:
 
 		// implementation of topics to publish
 		topicPub_laser_scan = this->create_publisher<sensor_msgs::msg::LaserScan>("scan_filtered", 1);
-		topicSub_laser_scan_raw = this->create_subscription<sensor_msgs::msg::LaserScan>("scan", 1, std::bind(&NodeClass::scanCallback, this,_1));
+		topicSub_laser_scan_raw = this->create_subscription<sensor_msgs::msg::LaserScan>("/lidar_1/scan", 1, std::bind(&NodeClass::scanCallback, this,_1));
 	}
 
 	void scanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
@@ -109,6 +107,7 @@ public:
 		num_scans = laser_scan.ranges.size();
 
 		stop_scan = 0;
+
 		for (unsigned int i = 0; i < scan_intervals.size(); i++)
 		{
 			std::vector<double> *it = &scan_intervals.at(i);
@@ -161,7 +160,6 @@ public:
 		std::vector<double> intervals_list;
 
 		//grab the range-list from the parameter server if possible
-		// rclcpp::Parameter foo_param("scan_intervals", std::vector<double>({}));
 		this->get_parameter("scan_intervals",vd_interval);
 		intervals_list = vd_interval;
 
@@ -179,22 +177,6 @@ public:
 
 				auto interval = intervals_list[i];
 
-				//make sure that the value we're looking at is either a double or an int
-
-				if (!(typeid(interval) == typeid(int) || typeid(interval) == typeid(double)))
-				{
-					RCLCPP_ERROR(this->get_logger(),"Values in the scan intervals specification must be numbers");
-					throw std::runtime_error("Values in the scan intervals specification must be numbers");
-				}
-				intervals_list.push_back(typeid(interval) == typeid(int) ? (int)(interval) : (double)(interval));
-
-				//basic checking validity
-				if (intervals_list.at(0) < -M_PI || intervals_list.at(1) < -M_PI)
-				{
-					RCLCPP_WARN(this->get_logger(),"Found a scan interval < -PI, skip!");
-					continue;
-					//throw std::runtime_error("Found a scan interval < -PI!");
-				}
 				//basic checking validity
 				if (intervals_list.at(0) > M_PI || intervals_list.at(1) > M_PI)
 				{
@@ -214,19 +196,19 @@ public:
 			}
 	
 		//now we want to sort the intervals and check for overlapping
-		sort(vd_interval_set.begin(), vd_interval_set.end(), compareIntervals);
+		// sort(vd_interval_set.begin(), vd_interval_set.end(), compareIntervals);
 
-		for (unsigned int i = 0; i < vd_interval_set.size(); i++)
-		{
-			for (unsigned int u = i + 1; u < vd_interval_set.size(); u++)
-			{
-				if (vd_interval_set.at(i).at(1) > vd_interval_set.at(u).at(0))
-				{
-					RCLCPP_ERROR(this->get_logger(),"The scan intervals you specified are overlapping!");
-					throw std::runtime_error("The scan intervals you specified are overlapping!");
-				}
-			}
-		}
+		// for (unsigned int i = 0; i < vd_interval_set.size(); i++)
+		// {
+		// 	for (unsigned int u = i + 1; u < vd_interval_set.size(); u++)
+		// 	{
+		// 		if (vd_interval_set.at(i).at(1) > vd_interval_set.at(u).at(0))
+		// 		{
+		// 			RCLCPP_ERROR(this->get_logger(),"The scan intervals you specified are overlapping!");
+		// 			throw std::runtime_error("The scan intervals you specified are overlapping!");
+		// 		}
+		// 	}
+		// }
 
 		/* DEBUG out:
 		for(unsigned int i = 0; i<vd_interval_set.size(); i++) {
@@ -235,6 +217,7 @@ public:
 
 		return vd_interval_set;
 	}
+
 static bool compareIntervals(std::vector<double> a, std::vector<double> b)
 {
 	return a.at(0) < b.at(0);
@@ -248,8 +231,6 @@ int main(int argc, char **argv)
 {
 	// initialize ROS, specify name of node
 	rclcpp::init(argc, argv);
-
-	NodeClass nc;
 
 	auto nh = std::make_shared<NodeClass>();
 

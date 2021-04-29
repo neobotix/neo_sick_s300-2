@@ -54,14 +54,23 @@ public:
 
 	SickS300ReceiverROS(): Node("neo_sick_s300_node")
 	{
-		this->get_parameter_or("scan_cycle_time", scan_cycle_time, 0.040);
-		this->get_parameter_or("scan_duration", scan_duration, 0.025); // scan_cycle_time * 270/360
-		this->get_parameter_or("scan_delay", scan_delay, 0.030);			// 20 ms transmission + 10 ms processing
+		this->declare_parameter("scan_cycle_time");
+		this->declare_parameter("scan_duration"); 
+		this->declare_parameter("scan_delay");			
+		this->declare_parameter("angle_min");
+		this->declare_parameter("angle_max");
+		this->declare_parameter("range_min");
+		this->declare_parameter("range_max");		
+		this->declare_parameter("frame_id");
+
+		this->get_parameter("scan_cycle_time", scan_cycle_time);
+		this->get_parameter("scan_duration", scan_duration); // scan_cycle_time * 270/360
+		this->get_parameter("scan_delay", scan_delay);			// 20 ms transmission + 10 ms processing
 		this->get_parameter_or("angle_min", angle_min, -135.0/180.0 * M_PI);
 		this->get_parameter_or("angle_max", angle_max, 135.0/180.0 * M_PI);
 		this->get_parameter_or("range_min", range_min, 0.01);
-		this->get_parameter_or("range_max", range_max, 29.0);				// 30m is maximum, report less to avoid confusion between true 30m and infinity
-		this->get_parameter_or("frame_id", frame_id, std::string("/base_laser_link"));
+		this->get_parameter_or("range_max", range_max, 29.0);					// 30m is maximum, report less to avoid confusion between true 30m and infinity
+		this->get_parameter("frame_id", frame_id);
 
 		m_topic_scan = this->create_publisher<sensor_msgs::msg::LaserScan>("scan",1); 
 	}
@@ -75,7 +84,6 @@ protected:
 		msg.header.frame_id = frame_id;
 
 		const size_t num_points = points.size();
-
 		msg.angle_min = angle_min;
 		msg.angle_max = angle_max;
 		msg.range_min = range_min;
@@ -126,10 +134,8 @@ int main(int argc, char **argv)
 
 	while(rclcpp::ok())
 	{
-		SickS300ReceiverROS receiver;
-
 		try {
-			receiver.open(port, baud_rate);
+			nh->open(port, baud_rate);
 		}
 		catch(std::exception& ex)
 		{
@@ -143,7 +149,7 @@ int main(int argc, char **argv)
 		while(rclcpp::ok())
 		{
 			try {
-				receiver.read(1000);
+				nh->read(1000);
 			}
 			catch(std::exception& ex)
 			{
