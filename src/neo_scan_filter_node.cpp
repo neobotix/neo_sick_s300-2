@@ -86,7 +86,7 @@ public:
 
 		// implementation of topics to publish
 		topicPub_laser_scan = this->create_publisher<sensor_msgs::msg::LaserScan>("scan_filtered", 1);
-		topicSub_laser_scan_raw = this->create_subscription<sensor_msgs::msg::LaserScan>("/lidar_1/scan", 1, std::bind(&NodeClass::scanCallback, this,_1));
+		topicSub_laser_scan_raw = this->create_subscription<sensor_msgs::msg::LaserScan>("scan", 1, std::bind(&NodeClass::scanCallback, this,_1));
 	}
 
 	void scanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
