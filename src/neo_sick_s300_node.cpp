@@ -46,30 +46,22 @@ public:
 	double scan_cycle_time = 0;
 	double scan_duration = 0;
 	double scan_delay = 0;
-	double angle_min = 0;
-	double angle_max = 0;
-	double range_min = 0;
-	double range_max = 0;
+	double angle_min = -135.0/180.0 * M_PI;
+	double angle_max = 135.0/180.0 * M_PI;
+	double range_min = 0.01;
+	double range_max = 29.0; // 30m is maximum, report less to avoid confusion between true 30m and infinity
 	std::string frame_id;
 
 	SickS300ReceiverROS(): Node("neo_sick_s300_node")
 	{
 		this->declare_parameter<double>("scan_cycle_time");
 		this->declare_parameter<double>("scan_duration"); 
-		this->declare_parameter<double>("scan_delay");			
-		this->declare_parameter<double>("angle_min");
-		this->declare_parameter<double>("angle_max");
-		this->declare_parameter<double>("range_min");
-		this->declare_parameter<double>("range_max");		
+		this->declare_parameter<double>("scan_delay");				
 		this->declare_parameter<std::string>("frame_id");
 
 		this->get_parameter("scan_cycle_time", scan_cycle_time);
 		this->get_parameter("scan_duration", scan_duration); // scan_cycle_time * 270/360
 		this->get_parameter("scan_delay", scan_delay);			// 20 ms transmission + 10 ms processing
-		this->get_parameter_or("angle_min", angle_min, -135.0/180.0 * M_PI);
-		this->get_parameter_or("angle_max", angle_max, 135.0/180.0 * M_PI);
-		this->get_parameter_or("range_min", range_min, 0.01);
-		this->get_parameter_or("range_max", range_max, 29.0);					// 30m is maximum, report less to avoid confusion between true 30m and infinity
 		this->get_parameter("frame_id", frame_id);
 
 		m_topic_scan = this->create_publisher<sensor_msgs::msg::LaserScan>("scan",1); 
