@@ -192,7 +192,7 @@ void SickS300Receiver::read(int timeout_ms)
 		}
 
 		// check for buffer overflow (should never happen)
-		if(m_offset >= m_buffer.size()) {
+		if( (size_t)m_offset >= m_buffer.size()) {
 			handle_debug_msg("buffer overflow");
 			m_offset = 0;	// discard all data
 		}
