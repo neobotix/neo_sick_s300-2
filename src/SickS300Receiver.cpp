@@ -324,7 +324,7 @@ void SickS300Receiver::read(int timeout_ms)
 		}
 
 		// handle data
-		handle_scan(scan_id, points);
+		handle_scan(points);
 
 		// discard data
 		discard_bytes(4 + telegram_bytes);

@@ -58,7 +58,7 @@ public:
 	void read(int timeout_ms);
 
 protected:
-	virtual void handle_scan(uint32_t scan_id, const std::vector<point_t>& points) = 0;
+	virtual void handle_scan(const std::vector<point_t>& points) = 0;
 
 	virtual void handle_debug_msg(const std::string& msg) = 0;
 
