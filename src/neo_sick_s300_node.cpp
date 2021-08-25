@@ -54,14 +54,14 @@ public:
 
 	SickS300ReceiverROS(): Node("neo_sick_s300_node")
 	{
-		this->declare_parameter("scan_cycle_time");
-		this->declare_parameter("scan_duration"); 
-		this->declare_parameter("scan_delay");			
-		this->declare_parameter("angle_min");
-		this->declare_parameter("angle_max");
-		this->declare_parameter("range_min");
-		this->declare_parameter("range_max");		
-		this->declare_parameter("frame_id");
+		this->declare_parameter<double>("scan_cycle_time");
+		this->declare_parameter<double>("scan_duration"); 
+		this->declare_parameter<double>("scan_delay");			
+		this->declare_parameter<double>("angle_min");
+		this->declare_parameter<double>("angle_max");
+		this->declare_parameter<double>("range_min");
+		this->declare_parameter<double>("range_max");		
+		this->declare_parameter<std::string>("frame_id");
 
 		this->get_parameter("scan_cycle_time", scan_cycle_time);
 		this->get_parameter("scan_duration", scan_duration); // scan_cycle_time * 270/360
@@ -76,7 +76,7 @@ public:
 	}
 
 protected:
-	void handle_scan(uint32_t scan_id, const std::vector<point_t>& points) override
+	void handle_scan(const std::vector<point_t>& points) override
 	{
 		sensor_msgs::msg::LaserScan msg;
 
@@ -127,8 +127,8 @@ int main(int argc, char **argv)
 	std::string port;
 	int baud_rate = 0;
 
-	nh->declare_parameter("port");
-	nh->declare_parameter("baud");
+	nh->declare_parameter<std::string>("port");
+	nh->declare_parameter<int>("baud");
 	nh->get_parameter("port", port);
 	nh->get_parameter("baud", baud_rate);
 
