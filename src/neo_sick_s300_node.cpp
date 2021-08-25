@@ -80,7 +80,8 @@ protected:
 	{
 		sensor_msgs::msg::LaserScan msg;
 
-		msg.header.stamp = rclcpp::Clock().now() - rclcpp::Duration(scan_duration) - rclcpp::Duration(scan_delay);
+		msg.header.stamp = rclcpp::Clock().now() - rclcpp::Duration::from_seconds(scan_duration) - 
+			rclcpp::Duration::from_seconds(scan_delay);
 		msg.header.frame_id = frame_id;
 
 		const size_t num_points = points.size();
