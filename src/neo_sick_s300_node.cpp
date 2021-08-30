@@ -76,7 +76,7 @@ public:
 	}
 
 protected:
-	void handle_scan(uint32_t scan_id, const std::vector<point_t>& points) override
+	void handle_scan(const std::vector<point_t>& points) override
 	{
 		sensor_msgs::msg::LaserScan msg;
 
