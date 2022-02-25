@@ -74,8 +74,15 @@ protected:
 
 		msg.header.stamp = rclcpp::Clock().now() - rclcpp::Duration::from_seconds(scan_duration) - 
 			rclcpp::Duration::from_seconds(scan_delay);
-		msg.header.frame_id = frame_id;
 
+		// Handle namespaces
+		std::string robot_namespace(this->get_namespace());
+		
+		// removing the unnecessary "/" from the namespace
+		robot_namespace.erase(std::remove(robot_namespace.begin(), robot_namespace.end(), '/'), 
+			robot_namespace.end());
+
+		msg.header.frame_id = robot_namespace + "_link";
 		const size_t num_points = points.size();
 		msg.angle_min = angle_min;
 		msg.angle_max = angle_max;
