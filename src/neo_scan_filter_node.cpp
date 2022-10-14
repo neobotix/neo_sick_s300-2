@@ -80,7 +80,7 @@ public:
 	NodeClass(): Node("neo_scan_filter_node")
 	{
 		// loading config
-		this->declare_parameter< std::vector<double> >("scan_intervals");
+		this->declare_parameter< std::vector<double> >("scan_intervals", {-2.27, 2.27});
 
 		scan_intervals = loadScanRanges();
 
