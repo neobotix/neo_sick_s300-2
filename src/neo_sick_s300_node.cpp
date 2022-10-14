@@ -54,10 +54,10 @@ public:
 
 	SickS300ReceiverROS(): Node("neo_sick_s300_node")
 	{
-		this->declare_parameter<double>("scan_cycle_time");
-		this->declare_parameter<double>("scan_duration"); 
-		this->declare_parameter<double>("scan_delay");				
-		this->declare_parameter<std::string>("frame_id");
+		this->declare_parameter<double>("scan_cycle_time", 0.040);
+		this->declare_parameter<double>("scan_duration", 0.025); 
+		this->declare_parameter<double>("scan_delay", 0.045);				
+		this->declare_parameter<std::string>("frame_id", "lidar_1_link");
 
 		this->get_parameter("scan_cycle_time", scan_cycle_time);
 		this->get_parameter("scan_duration", scan_duration); // scan_cycle_time * 270/360
@@ -127,8 +127,8 @@ int main(int argc, char **argv)
 	std::string port;
 	int baud_rate = 0;
 
-	nh->declare_parameter<std::string>("port");
-	nh->declare_parameter<int>("baud");
+	nh->declare_parameter<std::string>("port", "/dev/neo-s300-1");
+	nh->declare_parameter<int>("baud", 500000);
 	nh->get_parameter("port", port);
 	nh->get_parameter("baud", baud_rate);
 
