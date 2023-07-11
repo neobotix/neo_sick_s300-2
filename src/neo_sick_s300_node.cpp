@@ -79,8 +79,7 @@ protected:
 		std::string robot_namespace(this->get_namespace());
 		
 		// removing the unnecessary "/" from the namespace
-		robot_namespace.erase(std::remove(robot_namespace.begin(), robot_namespace.end(), '/'), 
-			robot_namespace.end());
+		robot_namespace.erase(0, 1); // The frame id would be lidar_1_link / robot1/lidar_1_link
 
 		msg.header.frame_id = robot_namespace + "_link";
 		const size_t num_points = points.size();
