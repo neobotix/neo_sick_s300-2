@@ -37,6 +37,7 @@
 
 #include <string>
 #include <vector>
+#include <cstdint>
 
 
 class SickS300Receiver {
