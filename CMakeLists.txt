@@ -23,18 +23,17 @@ add_executable(neo_scan_filter_node src/neo_scan_filter_node.cpp)
 
 ament_export_include_directories(include)
 
-ament_target_dependencies(neo_sick_s300_node
-  rclcpp
-  sensor_msgs
- )
-ament_target_dependencies(neo_scan_filter_node
-  rclcpp
-  sensor_msgs 
- )
+target_link_libraries(neo_sick_s300_node
+  ${PROJECT_NAME}
+  rclcpp::rclcpp
+  ${sensor_msgs_TARGETS}
+)
 
-target_link_libraries(neo_sick_s300_node ${PROJECT_NAME})
-
-target_link_libraries(neo_scan_filter_node ${PROJECT_NAME})
+target_link_libraries(neo_scan_filter_node
+  ${PROJECT_NAME}
+  rclcpp::rclcpp
+  ${sensor_msgs_TARGETS}
+)
 
 
 install(DIRECTORY include/
